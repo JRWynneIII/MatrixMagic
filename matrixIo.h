@@ -21,7 +21,7 @@ public:
   {
     delete[] matrix;
   }
-  void readMatrix(char* filename, int xDim, int yDim)
+  void readMatrix(const char* filename, int xDim, int yDim)
   {
     int x = 0;
     int y = 0;
@@ -32,7 +32,10 @@ public:
     {
       matrixFile >> matrix[xDim * y + x];
       if (x == xDim)
+      {
         y++;
+        x = 0;
+      }
       x++;
     }
   }
@@ -42,7 +45,7 @@ public:
     for (int y = 0; y < yDim; y++)
     {
       for (int x = 0; x < xDim; x++)
-        cout << matrix[xDim * y + x];
+        cout << matrix[xDim * y + x] << " ";
       cout << endl;
     }
   }
