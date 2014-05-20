@@ -7,7 +7,6 @@
 #include <cstdlib>
 using namespace std;
 
-template<typename T>
 class Matrix
 {
 
@@ -15,32 +14,32 @@ public:
   Matrix()
   {
     matrix=NULL;
+    xDim = yDim = 0;
   }
 
   ~Matrix()
   {
     delete[] matrix;
   }
-  void readMatrix(const char* filename, int xDim, int yDim)
+  void readMatrix(const char* filename, int xSize, int ySize)
   {
     int x = 0;
     int y = 0;
-    matrix = new T[xDim*yDim];
+    matrix = new double[xSize*ySize];
     ifstream matrixFile;
     matrixFile.open(filename);
-    while(!matrixFile.eof())
+    for(x = 0; x < xSize; x++)
     {
-      matrixFile >> matrix[xDim * y + x];
-      if (x == xDim)
+      for(y = 0; y < ySize; y++)
       {
-        y++;
-        x = 0;
+        matrixFile >> matrix[xSize * y + x];
       }
-      x++;
     }
+    xDim = xSize;
+    yDim = ySize;
   }
 
-  void printMatrix(int xDim, int yDim)
+  void printMatrix()
   {
     for (int y = 0; y < yDim; y++)
     {
@@ -49,7 +48,20 @@ public:
       cout << endl;
     }
   }
+
+  int getX()
+  {
+    return xDim;
+  }
+  
+  int getY()
+  {
+    return yDim;
+  }
+
 private:
-  T* matrix;
+  double* matrix;
+  int xDim;
+  int yDim;
 };
 #endif

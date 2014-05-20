@@ -3,8 +3,8 @@
 
 int main(void)
 {
-  Matrix<int> matrixA;
-  matrixA.readMatrix("matrix.txt", 3, 3);
-  matrixA.printMatrix(3,3);
+  Matrix matrixA;
+  matrixA.readMatrix("s3dkt3m2.dat",8,11306);
+  matrixA.printMatrix();
   return 0;
 }
