@@ -26,14 +26,14 @@ public:
   {
     int x = 0;
     int y = 0;
-    ifstream internal_storageFile;
-    internal_storageFile.open(filename);
+    ifstream matrixFile;
+    matrixFile.open(filename);
     string c;
     int xSize = 0;
     int ySize = 0;
     char* word;
     char* line;
-    getline(internal_storageFile, c);
+    getline(matrixFile, c);
     strcpy(line, c.c_str());
     word = strtok(line, " ");
     while(word != NULL)
@@ -41,27 +41,27 @@ public:
       word = strtok(NULL, " ");
       xSize++;
     }
-    internal_storageFile.close();
-    internal_storageFile.open(filename);
+    matrixFile.close();
+    matrixFile.open(filename);
 
-    while(!internal_storageFile.eof())
+    while(!matrixFile.eof())
     {
-      getline(internal_storageFile, c);
+      getline(matrixFile, c);
       ySize++;
     }
     ySize--;
     internal_storage = new double[xSize*ySize];
-    internal_storageFile.close();
-    internal_storageFile.open(filename);
+    matrixFile.close();
+    matrixFile.open(filename);
     int temp;
     for(y = 0; y < ySize; y++)
     {
       for(x = 0; x < xSize; x++)
       {
-         internal_storageFile >> internal_storage[xSize * y + x];
+         matrixFile >> internal_storage[xSize * y + x];
       }
     }
-    internal_storageFile.close();
+    matrixFile.close();
     xDim = xSize;
     yDim = ySize;
   }
