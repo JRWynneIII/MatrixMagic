@@ -14,26 +14,26 @@ class Matrix
 public:
   Matrix()
   {
-    matrix=NULL;
+    internal_storage=NULL;
     xDim = yDim = 0;
   }
 
   ~Matrix()
   {
-    delete[] matrix;
+    delete[] internal_storage;
   }
   void readMatrix(const char* filename)
   {
     int x = 0;
     int y = 0;
-    ifstream matrixFile;
-    matrixFile.open(filename);
+    ifstream internal_storageFile;
+    internal_storageFile.open(filename);
     string c;
     int xSize = 0;
     int ySize = 0;
     char* word;
     char* line;
-    getline(matrixFile, c);
+    getline(internal_storageFile, c);
     strcpy(line, c.c_str());
     word = strtok(line, " ");
     while(word != NULL)
@@ -41,27 +41,27 @@ public:
       word = strtok(NULL, " ");
       xSize++;
     }
-    matrixFile.close();
-    matrixFile.open(filename);
+    internal_storageFile.close();
+    internal_storageFile.open(filename);
 
-    while(!matrixFile.eof())
+    while(!internal_storageFile.eof())
     {
-      getline(matrixFile, c);
+      getline(internal_storageFile, c);
       ySize++;
     }
     ySize--;
-    matrix = new double[xSize*ySize];
-    matrixFile.close();
-    matrixFile.open(filename);
+    internal_storage = new double[xSize*ySize];
+    internal_storageFile.close();
+    internal_storageFile.open(filename);
     int temp;
     for(y = 0; y < ySize; y++)
     {
       for(x = 0; x < xSize; x++)
       {
-         matrixFile >> matrix[xSize * y + x];
+         internal_storageFile >> internal_storage[xSize * y + x];
       }
     }
-    matrixFile.close();
+    internal_storageFile.close();
     xDim = xSize;
     yDim = ySize;
   }
@@ -71,7 +71,7 @@ public:
     for (int y = 0; y < yDim; y++)
     {
       for (int x = 0; x < xDim; x++)
-        cout << fixed << matrix[xDim * y + x] << " ";
+        cout << fixed << internal_storage[xDim * y + x] << " ";
       cout << endl;
     }
   }
@@ -87,7 +87,7 @@ public:
   }
 
 private:
-  double* matrix;
+  double* internal_storage;
   int xDim;
   int yDim;
 };
