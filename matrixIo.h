@@ -14,13 +14,13 @@ class Matrix
 public:
   Matrix()
   {
-    matrix=NULL;
+    internal_storage=NULL;
     xDim = yDim = 0;
   }
 
   ~Matrix()
   {
-    delete[] matrix;
+    delete[] internal_storage;
   }
   void readMatrix(const char* filename)
   {
@@ -50,7 +50,7 @@ public:
       ySize++;
     }
     ySize--;
-    matrix = new double[xSize*ySize];
+    internal_storage = new double[xSize*ySize];
     matrixFile.close();
     matrixFile.open(filename);
     int temp;
@@ -58,7 +58,7 @@ public:
     {
       for(x = 0; x < xSize; x++)
       {
-         matrixFile >> matrix[xSize * y + x];
+         matrixFile >> internal_storage[xSize * y + x];
       }
     }
     matrixFile.close();
@@ -71,7 +71,7 @@ public:
     for (int y = 0; y < yDim; y++)
     {
       for (int x = 0; x < xDim; x++)
-        cout << fixed << matrix[xDim * y + x] << " ";
+        cout << fixed << internal_storage[xDim * y + x] << " ";
       cout << endl;
     }
   }
@@ -87,7 +87,7 @@ public:
   }
 
 private:
-  double* matrix;
+  double* internal_storage;
   int xDim;
   int yDim;
 };
