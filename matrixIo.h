@@ -66,6 +66,13 @@ public:
     yDim = ySize;
   }
 
+  void setMatrix(double* external, int x, int y)
+  {
+    internal_storage = external;
+    xDim = x;
+    yDim = y;
+  }
+
   void printMatrix()
   {
     for (int y = 0; y < yDim; y++)
