@@ -1,5 +1,5 @@
 #include <iostream>
-#include "matrixIo.h"
+#include "../matrixIo.h"
 
 int main(void)
 {

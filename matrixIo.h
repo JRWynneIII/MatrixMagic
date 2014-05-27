@@ -32,10 +32,8 @@ public:
     int xSize = 0;
     int ySize = 0;
     char* word;
-    char* line;
     getline(matrixFile, c);
-    strcpy(line, c.c_str());
-    word = strtok(line, " ");
+    word = strtok((char*)c.c_str(), " ");
     while(word != NULL)
     {
       word = strtok(NULL, " ");
@@ -73,6 +71,10 @@ public:
     yDim = y;
   }
 
+  double* getMatrix()
+  {
+    return internal_storage;
+  }
   void printMatrix()
   {
     for (int y = 0; y < yDim; y++)
