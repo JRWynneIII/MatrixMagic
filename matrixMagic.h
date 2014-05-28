@@ -2,9 +2,8 @@
 #define MATRIXMAGIC_H
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <boost/algorithm/string/split.hpp>
 #include <string>
+#include <string.h>
 #include <cstdlib>
 using namespace std;
 
@@ -20,6 +19,16 @@ public:
   ~Matrix()
   {
     delete[] internal_storage;
+  }
+  void invert()
+  {
+    for (int i=0; i < yDim; i++)
+      for (int j=i+1; j < xDim; j++)
+      {
+        int temp = internal_storage[ i * xDim + j ];
+        internal_storage[ i * xDim + j ] = internal_storage[ j * xDim + i ];
+        internal_storage[ j * xDim + i ] = temp;
+      }
   }
   void readMatrix(const char* filename)
   {
