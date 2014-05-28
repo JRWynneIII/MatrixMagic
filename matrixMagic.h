@@ -20,7 +20,7 @@ public:
   {
     delete[] internal_storage;
   }
-  void invert()
+  void transpose()
   {
     for (int i=0; i < yDim; i++)
       for (int j=i+1; j < xDim; j++)
