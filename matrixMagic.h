@@ -1,6 +1,5 @@
-#ifndef MATRIXIO_H
-#define MATRIXIO_H
-
+#ifndef MATRIXMAGIC_H
+#define MATRIXMAGIC_H
 #include <iostream>
 #include <fstream>
 #include <vector>

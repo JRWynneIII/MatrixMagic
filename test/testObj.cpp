@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../matrixIo.h"
+#include "../matrixMagic.h"
 
 int main(void)
 {
