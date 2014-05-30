@@ -22,13 +22,19 @@ public:
   }
   void transpose()
   {
-    for (int i=0; i < yDim; i++)
-      for (int j=i+1; j < xDim; j++)
-      {
-        int temp = internal_storage[ i * xDim + j ];
-        internal_storage[ i * xDim + j ] = internal_storage[ j * xDim + i ];
-        internal_storage[ j * xDim + i ] = temp;
-      }
+    if (yDim !=  1 && xDim != 1)
+    {
+      for (int i=0; i < yDim; i++) //y
+        for (int j=i+1; j < xDim; j++) //x
+        {
+          int temp = internal_storage[i * xDim + j];
+          internal_storage[i * xDim + j] = internal_storage[j * xDim + i];
+          internal_storage[j * xDim + i] = temp;
+        }
+    }
+    int tmp = xDim;
+    xDim = yDim;
+    yDim = tmp;
   }
   void readMatrix(const char* filename)
   {
