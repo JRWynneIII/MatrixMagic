@@ -21,10 +21,10 @@ public:
     delete[] internal_storage;
   }
 
-  Matrix* operator*(Matrix &rh)
+  Matrix operator*(Matrix &rh)
   {
     //store results in the vector. return a pointer to it
-    if ((this->isVector() && !rh.isVector()) || (rh.isVector() && !this->isVector())
+    if ((this->isVector() && !rh.isVector()) || (rh.isVector() && !this->isVector()))
     {
       //One of the matricies are vectors
       int m = 0;
@@ -38,8 +38,8 @@ public:
       //get the dimensions of the Matrix. Assume the vector's main dim is m
       if (!this->isVector())
       {
-        m = this->getX;
-        n = this->getY;
+        m = this->getX();
+        n = this->getY();
       }
       else
       {
@@ -55,26 +55,31 @@ public:
         for (int j = 0; j < m; j++)
         {
           if (rhIsVector)
-            temp = temp + (lh[i][j] * right[j]);
+            temp = temp + (lh[i * m + j] * right[j]);
           else
-            temp = temp + (right[i][j] * lh[j]);
+            temp = temp + (right[i * m + j] * lh[j]);
         }
         resultant[i] = temp;
         temp = 0;
       }
       if (rhIsVector)
       {
-       rh.putMatrix(resultant,1,m);
+       rh.setMatrix(resultant,1,m);
        return rh;
       }
       else
       {
-       this->putMatrix(resultant,1,m); 
-       return this;
+       this->setMatrix(resultant,1,m); 
+       return *this;
       } 
     }
-
     //TODO:Matrix!Matrix multiply and Matrix!scalar multiply
+  }
+
+  Matrix& operator= (Matrix& rhs)
+  {
+    this->setMatrix(rhs.getMatrix(),rhs.getX(),rhs.getY());
+    return rhs;//*this;
   }
 
   void transpose()
@@ -166,14 +171,15 @@ public:
     return yDim;
   }
 
-private:
   bool isVector()
   {
-    if (this.getX() == 1 || this.getY() == 1)
+    if (this->getX() == 1 || this->getY() == 1)
       return true;
     else
       return false;
   }
+
+private:
   double* internal_storage;
   int xDim;
   int yDim;
