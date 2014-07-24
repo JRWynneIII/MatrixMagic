@@ -21,66 +21,20 @@ public:
     delete[] internal_storage;
   }
 
-  Matrix operator*(Matrix &rh)
-  {
-    //store results in the vector. return a pointer to it
-    if ((this->isVector() && !rh.isVector()) || (rh.isVector() && !this->isVector()))
-    {
-      //One of the matricies are vectors
-      int m = 0;
-      int n = 0;
-      bool rhIsVector = true;
-      double* resultant;
-      double temp = 0;
-      double* lh = this->getMatrix();
-      double* right = rh.getMatrix();
-      
-      //get the dimensions of the Matrix. Assume the vector's main dim is m
-      if (!this->isVector())
-      {
-        m = this->getX();
-        n = this->getY();
-      }
-      else
-      {
-        m = rh.getX();
-        n = rh.getY();
-        rhIsVector = false;
-      }
-      //Malloc the array to temporarily hold the resultant
-      resultant = (double*)malloc(n*sizeof(double));
-      
-      for(int i = 0; i < n; i++)
-      {
-        for (int j = 0; j < m; j++)
-        {
-          if (rhIsVector)
-            temp = temp + (lh[i * m + j] * right[j]);
-          else
-            temp = temp + (right[i * m + j] * lh[j]);
-        }
-        resultant[i] = temp;
-        temp = 0;
-      }
-      if (rhIsVector)
-      {
-       rh.setMatrix(resultant,1,m);
-       return rh;
-      }
-      else
-      {
-       this->setMatrix(resultant,1,m); 
-       return *this;
-      } 
-    }
-    //TODO:Matrix!Matrix multiply and Matrix!scalar multiply
-  }
-
-  Matrix& operator= (Matrix& rhs)
-  {
-    this->setMatrix(rhs.getMatrix(),rhs.getX(),rhs.getY());
-    return rhs;//*this;
-  }
+//  Matrix operator*(Matrix &rh)
+//  {
+//    //TODO:Matrix!Matrix multiply and Matrix!scalar multiply
+//  }
+//
+//  Matrix& operator= (Matrix &rhs)
+//  {
+//    if (this != &rhs)
+//    {
+//      this->setMatrix(rhs.getMatrix(),rhs.getX(),rhs.getY());
+//      rhs.empty();
+//      return *this;
+//    }
+//  }
 
   void transpose()
   {
@@ -142,6 +96,7 @@ public:
 
   void setMatrix(double* external, int x, int y)
   {
+    internal_storage = NULL;
     internal_storage = external;
     xDim = x;
     yDim = y;
@@ -179,9 +134,51 @@ public:
       return false;
   }
 
+  void empty()
+  {
+    delete[] internal_storage;
+  }
+
+
 private:
   double* internal_storage;
   int xDim;
   int yDim;
 };
+
+Matrix multiply(Matrix& A, Matrix& B)
+{
+  int n;
+  if (A.isVector())
+  {
+    n = B.getX();
+  }
+
+  else
+  {
+    n = A.getX();
+  }
+
+  //do dot product
+  double res = 0.0;
+  double* a_raw = A.getMatrix();
+  double* b_raw = B.getMatrix();
+  double* resultant = (double*)malloc(n*sizeof(double));
+  int i = 0;
+  for (; i <= n-3; i+=3)
+  {
+      res += (a_raw[i] * b_raw[i] +
+              a_raw[i+1] * b_raw[i+1] +
+              a_raw[i+2] * b_raw[i+2]);
+  }
+  for (; i < n; i++)
+  {
+    res += a_raw[i] * b_raw[i];
+    resultant[i] = res;
+  }
+
+  B.setMatrix(resultant,1,n);
+
+  return B;
+}
 #endif

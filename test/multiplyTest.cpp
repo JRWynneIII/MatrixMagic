@@ -10,7 +10,7 @@ int main(void)
   A.readMatrix("matrix.txt");
   B.setMatrix(vec,1,3);
   std::cout << "nxn Matrix multiplied by 1xn Vector\n";
-  C = (A * B);
+  C = multiply(A,B);
   C.printMatrix();
   return 0;
 }

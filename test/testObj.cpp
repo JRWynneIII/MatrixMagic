@@ -4,7 +4,7 @@
 int main(void)
 {
   Matrix matrixA;
-  matrixA.readMatrix("s3dkt3m2.dat");
+  matrixA.readMatrix("matrix.txt");
   matrixA.printMatrix();
   return 0;
 }
