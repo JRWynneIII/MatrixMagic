@@ -18,7 +18,7 @@ public:
 
   ~Matrix()
   {
-    delete[] internal_storage;
+    //delete[] internal_storage;
   }
 
 //  Matrix operator*(Matrix &rh)
@@ -160,20 +160,17 @@ Matrix multiply(Matrix& A, Matrix& B)
   }
 
   //do dot product
-  double res = 0.0;
   double* a_raw = A.getMatrix();
   double* b_raw = B.getMatrix();
   double* resultant = (double*)malloc(n*sizeof(double));
-  int i = 0;
-  for (; i <= n-3; i+=3)
+  double res = 0.0;
+  int i;
+  for (int j = 0; j < n; j++)
   {
-      res += (a_raw[i] * b_raw[i] +
-              a_raw[i+1] * b_raw[i+1] +
-              a_raw[i+2] * b_raw[i+2]);
-  }
-  for (; i < n; i++)
-  {
-    res += a_raw[i] * b_raw[i];
+    for (i = 0; i < n; i++)
+    {
+        res += a_raw[i] * b_raw[i];
+    }
     resultant[i] = res;
   }
 
