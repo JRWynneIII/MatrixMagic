@@ -21,21 +21,6 @@ public:
     //delete[] internal_storage;
   }
 
-//  Matrix operator*(Matrix &rh)
-//  {
-//    //TODO:Matrix!Matrix multiply and Matrix!scalar multiply
-//  }
-//
-//  Matrix& operator= (Matrix &rhs)
-//  {
-//    if (this != &rhs)
-//    {
-//      this->setMatrix(rhs.getMatrix(),rhs.getX(),rhs.getY());
-//      rhs.empty();
-//      return *this;
-//    }
-//  }
-
   void transpose()
   {
     if (yDim !=  1 && xDim != 1)
@@ -146,17 +131,20 @@ private:
   int yDim;
 };
 
-Matrix multiply(Matrix& A, Matrix& B)
+void multiply(Matrix& A, Matrix& B)
 {
   int n;
-  if (A.isVector())
+  if (A.isVector() && !B.isVector())
   {
     n = B.getX();
   }
-
-  else
+  else if (!A.isVector() && B.isVector())
   {
     n = A.getX();
+  }
+  else
+  {
+    std::cout << "Error in multiply() routine of MatrixMagic!\nHINT:First parameter should be a 2D matrix and 2nd should be a 1D vector\n";
   }
 
   //do dot product
@@ -164,18 +152,18 @@ Matrix multiply(Matrix& A, Matrix& B)
   double* b_raw = B.getMatrix();
   double* resultant = (double*)malloc(n*sizeof(double));
   double res = 0.0;
-  int i;
+  int i = 0;
+
   for (int j = 0; j < n; j++)
   {
     for (i = 0; i < n; i++)
     {
-        res += a_raw[i] * b_raw[i];
+        res += a_raw[j * n + i] * b_raw[i];
     }
-    resultant[i] = res;
+    resultant[j] = res;
+    res = 0;
   }
 
   B.setMatrix(resultant,1,n);
-
-  return B;
 }
 #endif
