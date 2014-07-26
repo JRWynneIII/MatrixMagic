@@ -142,9 +142,38 @@ void multiply(Matrix& A, Matrix& B)
   {
     n = A.getX();
   }
+  else if (A.isVector() && B.isVector())
+  {
+    if (A.getX() != B.getX() && A.getY() != B.getY())
+    {
+      if (A.getX() == B.getY() || A.getY() == B.getX())
+      {
+        if (A.getX() != 1)
+        {
+          n = A.getX();
+        }
+        else
+        {
+          n = A.getY();
+        }
+        double* a_raw = A.getMatrix();
+        double* b_raw = B.getMatrix();
+        double* resultant = new double;
+        double res = 0.0;
+        int i = 0;
+        for (i = 0; i < n; i++)
+        {
+           res += a_raw[i] * b_raw[i];
+        }
+        *resultant = res;
+        B.setMatrix(resultant,1,1);
+        return;
+      }
+    }
+  }
   else
   {
-    std::cout << "Error in multiply() routine of MatrixMagic!\nHINT:First parameter should be a 2D matrix and 2nd should be a 1D vector\n";
+    std::cout << "Error in multiply() routine of MatrixMagic!\nHINT:First parameter should be a 2D matrix and 2nd should be a 1D vector\nor both need to be vectors";
   }
 
   //do dot product
