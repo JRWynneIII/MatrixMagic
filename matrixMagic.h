@@ -173,7 +173,8 @@ void multiply(Matrix& A, Matrix& B)
   }
   else
   {
-    std::cout << "Error in multiply() routine of MatrixMagic!\nHINT:First parameter should be a 2D matrix and 2nd should be a 1D vector\nor both need to be vectors";
+    std::cerr << "\nError in multiply() routine of MatrixMagic!\n\n";
+    exit(EXIT_FAILURE);
   }
 
   //do dot product
