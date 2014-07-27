@@ -134,66 +134,68 @@ private:
 void multiply(Matrix& A, Matrix& B)
 {
   int n;
-  if (A.isVector() && !B.isVector())
+  if (A.getX() == B.getY())
   {
-    n = B.getX();
-  }
-  else if (!A.isVector() && B.isVector())
-  {
-    n = A.getX();
-  }
-  else if (A.isVector() && B.isVector())
-  {
-    if (A.getX() != B.getX() && A.getY() != B.getY())
+    if (A.isVector() && !B.isVector())
     {
-      if (A.getX() == B.getY() || A.getY() == B.getX())
+      n = B.getX();
+    }
+    else if (!A.isVector() && B.isVector())
+    {
+      n = A.getX();
+    }
+    else if (A.isVector() && B.isVector())
+    {
+      if (A.getX() != B.getX() && A.getY() != B.getY())
       {
-        if (A.getX() != 1)
+        if (A.getX() == B.getY() || A.getY() == B.getX())
         {
-          n = A.getX();
+          if (A.getX() != 1)
+          {
+            n = A.getX();
+          }
+          else
+          {
+            n = A.getY();
+          }
+          double* a_raw = A.getMatrix();
+          double* b_raw = B.getMatrix();
+          double* resultant = new double;
+          double res = 0.0;
+          int i = 0;
+          for (i = 0; i < n; i++)
+          {
+             res += a_raw[i] * b_raw[i];
+          }
+          *resultant = res;
+          B.setMatrix(resultant,1,1);
+          return;
         }
-        else
-        {
-          n = A.getY();
-        }
-        double* a_raw = A.getMatrix();
-        double* b_raw = B.getMatrix();
-        double* resultant = new double;
-        double res = 0.0;
-        int i = 0;
-        for (i = 0; i < n; i++)
-        {
-           res += a_raw[i] * b_raw[i];
-        }
-        *resultant = res;
-        B.setMatrix(resultant,1,1);
-        return;
       }
     }
-  }
-  else
-  {
-    std::cerr << "\nError in multiply() routine of MatrixMagic!\n\n";
-    exit(EXIT_FAILURE);
-  }
-
-  //do dot product
-  double* a_raw = A.getMatrix();
-  double* b_raw = B.getMatrix();
-  double* resultant = (double*)malloc(n*sizeof(double));
-  double res = 0.0;
-  int i = 0;
-
-  for (int j = 0; j < n; j++)
-  {
-    for (i = 0; i < n; i++)
+    else
     {
-        res += a_raw[j * n + i] * b_raw[i];
+      std::cerr << "\nError in multiply() routine of MatrixMagic!\n\n";
+      exit(EXIT_FAILURE);
     }
-    resultant[j] = res;
-    res = 0;
+  
+    double* a_raw = A.getMatrix();
+    double* b_raw = B.getMatrix();
+    double* resultant = (double*)malloc(n*sizeof(double));
+    double res = 0.0;
+    int i = 0;
+  
+    for (int j = 0; j < n; j++)
+    {
+      for (i = 0; i < n; i++)
+      {
+          res += a_raw[j * n + i] * b_raw[i];
+      }
+      resultant[j] = res;
+      res = 0;
+    }
+  
+    B.setMatrix(resultant,1,n);
   }
-
-  B.setMatrix(resultant,1,n);
 }
 #endif
