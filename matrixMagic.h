@@ -87,6 +87,53 @@ public:
     yDim = y;
   }
 
+  void LUDecomp()
+  {
+    double* U = new double[xDim * yDim];
+    double* L = new double[xDim * yDim];
+    int i, j;
+    //Loop through internal_storage and seperate the lower triangular matrix and upper triangular matrix into L and U respectively
+    for (i = 0; i < yDim; i++)
+    {
+      for (j = 0; j < xDim; j++)
+      {
+        if (j > i)
+        {
+          U[xDim * i + j] = internal_storage[xDim * i + j];
+          L[xDim * i + j] = 0;
+        }
+        else if (j == i)
+        {
+          U[xDim * i + j] = internal_storage[xDim * i + j];
+          L[xDim * i + j] = internal_storage[xDim * i + j];
+        }
+        else
+        {
+          L[xDim * i + j] = internal_storage[xDim * i + j];
+          U[xDim * i + j] = 0;
+        }
+      }
+    }
+    
+    for (i = 0; i < yDim; i++)
+    {
+      for (j = 0; j < xDim; j++)
+      {
+        std::cout << U[xDim * i + j] << " ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    for (i = 0; i < yDim; i++)
+    {
+      for (j = 0; j < xDim; j++)
+      {
+        std::cout << L[xDim * i + j] << " ";
+      }
+      std::cout << std::endl;
+    }
+  }
+
   double* getMatrix()
   {
     return internal_storage;
@@ -198,4 +245,5 @@ void multiply(Matrix& A, Matrix& B)
     B.setMatrix(resultant,1,n);
   }
 }
+
 #endif

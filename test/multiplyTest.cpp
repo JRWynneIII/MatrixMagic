@@ -5,7 +5,7 @@ int main(void)
 {
   Matrix A;
   Matrix B;
-  double vec[3] = {1,1,1};
+  double vec[3] = {15,31,661};
   A.readMatrix("matrix.txt");
   B.setMatrix(vec,1,3);
   std::cout << "nxn Matrix multiplied by 1xn Vector\n";
