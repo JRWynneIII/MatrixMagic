@@ -178,6 +178,8 @@ private:
   int yDim;
 };
 
+double* squareMatrixMult(Matrix A, Matrix B);
+
 void multiply(Matrix& A, Matrix& B)
 {
   int n;
@@ -220,6 +222,11 @@ void multiply(Matrix& A, Matrix& B)
         }
       }
     }
+    else if (!A.isVector() && !B.isVector())
+    {
+      squareMatrixMult(A,B);
+      return;
+    }
     else
     {
       std::cerr << "\nError in multiply() routine of MatrixMagic!\n\n";
@@ -244,6 +251,48 @@ void multiply(Matrix& A, Matrix& B)
   
     B.setMatrix(resultant,1,n);
   }
+}
+
+double* squareMatrixMult(Matrix A, Matrix B)
+{
+  int n,m;
+  int nA, nB, mA, mB;
+  double res = 0;
+  double* Aptr = A.getMatrix();
+  double* Bptr = B.getMatrix();
+  double* resultant;
+
+  //test to see if they're multiplyable
+  if (A.getX() != B.getY())
+  {
+    std::cerr << "\nError in squareMatrixMult()! Dimensions are not compatable\n\n";
+    exit(EXIT_FAILURE);
+  }
+  
+  mA = A.getY();
+  mB = B.getY();
+  nA = A.getX();
+  nB = B.getX();
+
+  //size of final matrix
+  m = mA;
+  n = nB;
+
+  resultant = new double[m*n];
+  //row * column
+  int j = 0;
+  
+  for (int i = 0; i < n; i++)
+  {
+    for (j = 0; j < m; j++) 
+    {
+      res += Aptr[i * m + j] * Bptr[j * m + i];
+    }
+    resultant[i * m + j] = res;
+    res = 0;
+  }
+  
+  return resultant;
 }
 
 #endif
