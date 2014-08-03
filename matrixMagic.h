@@ -224,7 +224,9 @@ void multiply(Matrix& A, Matrix& B)
     }
     else if (!A.isVector() && !B.isVector())
     {
-      squareMatrixMult(A,B);
+      double* resultant = new double;
+      resultant = squareMatrixMult(A,B);
+      B.setMatrix(resultant,A.getY(),B.getX());
       return;
     }
     else
@@ -280,18 +282,19 @@ double* squareMatrixMult(Matrix A, Matrix B)
 
   resultant = new double[m*n];
   //row * column
-  int j = 0;
-  
+  int k = 0;
   for (int i = 0; i < n; i++)
   {
-    for (j = 0; j < m; j++) 
+    for (int j = 0; j < n; j++)
     {
-      res += Aptr[i * m + j] * Bptr[j * m + i];
+      for (k = 0; k < m; k++) 
+      {
+        res += Aptr[i * m + k] * Bptr[k * m + j];
+      }
+      resultant[i * m + j] = res;
+      res = 0;
     }
-    resultant[i * m + j] = res;
-    res = 0;
   }
-  
   return resultant;
 }
 
