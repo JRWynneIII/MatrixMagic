@@ -37,5 +37,5 @@ Files
 `vector.txt` -- Small test vector 
 `matrixMagic.h` -- Contains the Matrix class  
 `s3dkt3m2.dat` -- Part of a matrix from the [Matrix Market](http://math.nist.gov/MatrixMarket/index.html)  
-`makefile` -- Allows you to make the shared library (`make`) and to compile all the tests (`make tests`)
+`makefile` -- Allows you to make the shared library and to compile all the tests
 `test/` -- Directory that contains test code for each of MatrixMagic's features and functions.
