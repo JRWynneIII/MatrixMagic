@@ -28,6 +28,7 @@ private:
   double* internal_storage;
   int xDim;
   int yDim;
+  bool isDeletable;
 };
 
 double* squareMatrixMult(Matrix A, Matrix B);

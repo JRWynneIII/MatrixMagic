@@ -4,11 +4,13 @@ Matrix::Matrix()
 {
   internal_storage=NULL;
   xDim = yDim = 0;
+  isDeletable = true;
 }
 
 Matrix::~Matrix()
 {
-  //delete[] internal_storage;
+  if (isDeletable)
+    delete[] internal_storage;
 }
 
 void Matrix::transpose()
@@ -67,10 +69,12 @@ void Matrix::readMatrix(const char* filename)
   matrixFile.close();
   xDim = xSize;
   yDim = ySize;
+  isDeletable = true;
 }
 
 void Matrix::setMatrix(double* external, int x, int y)
 {
+  isDeletable = false;
   internal_storage = NULL;
   internal_storage = external;
   xDim = x;
@@ -158,7 +162,13 @@ bool Matrix::isVector()
 
 void Matrix::empty()
 {
-  delete[] internal_storage;
+  if (isDeletable)
+    delete[] internal_storage;
+  else
+  {
+    std::cerr << "\nMatrixMagic: Error in empty() method!\n\n";
+    exit(EXIT_FAILURE);
+  }
 }
 
 double* squareMatrixMult(Matrix A, Matrix B)
@@ -173,7 +183,7 @@ double* squareMatrixMult(Matrix A, Matrix B)
   //test to see if they're multiplyable
   if (A.getX() != B.getY())
   {
-    std::cerr << "\nError in squareMatrixMult()! Dimensions are not compatable\n\n";
+    std::cerr << "\nMatrixMagic: Error in squareMatrixMult()! Dimensions are not compatable\n\n";
     exit(EXIT_FAILURE);
   }
   
@@ -255,7 +265,7 @@ void multiply(Matrix& A, Matrix& B)
     }
     else
     {
-      std::cerr << "\nError in multiply() routine of MatrixMagic!\n\n";
+      std::cerr << "\nMatrixMagic: Error in multiply() routine\n\n";
       exit(EXIT_FAILURE);
     }
   
