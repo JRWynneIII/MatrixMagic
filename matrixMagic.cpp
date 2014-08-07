@@ -80,52 +80,40 @@ void Matrix::setMatrix(double* external, int x, int y)
   xDim = x;
   yDim = y;
 }
-
-void Matrix::LUDecomp()
+#define L(r, c) (L[(r)*xDim + (c)])
+#define U(r, c) (U[(r)*xDim + (c)])
+#define internal_storage(r, c) (internal_storage[(r)*xDim + (c)])
+void Matrix::LUDecomp(Matrix &l, Matrix &u)
 {
+  l.empty();
+  u.empty();
+
   double* U = new double[xDim * yDim];
   double* L = new double[xDim * yDim];
-  int i, j;
-  //Loop through internal_storage and seperate the lower triangular matrix and upper triangular matrix into L and U respectively
-  for (i = 0; i < yDim; i++)
+
+  int i, j, k;
+  int n = xDim;
+
+  for (k = 0; k < n ; k++) 
   {
-    for (j = 0; j < xDim; j++)
+    L(k,k) = 1;
+    for (i = k + 1; i < n ; i ++)
     {
-      if (j > i)
+      L(i,k) = internal_storage(i,k)/internal_storage(k,k);
+
+      for (j = k + 1; j < n ; j ++) 
       {
-        U[xDim * i + j] = internal_storage[xDim * i + j];
-        L[xDim * i + j] = 0;
+        internal_storage(i,j) = internal_storage(i,j) - L(i,k)*internal_storage(k,j);
       }
-      else if (j == i)
-      {
-        U[xDim * i + j] = internal_storage[xDim * i + j];
-        L[xDim * i + j] = internal_storage[xDim * i + j];
-      }
-      else
-      {
-        L[xDim * i + j] = internal_storage[xDim * i + j];
-        U[xDim * i + j] = 0;
-      }
+    }
+    for (j = k; j < n ; j++) 
+    {
+      U(k,j) = internal_storage(k,j);
     }
   }
   
-  for (i = 0; i < yDim; i++)
-  {
-    for (j = 0; j < xDim; j++)
-    {
-      std::cout << U[xDim * i + j] << " ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-  for (i = 0; i < yDim; i++)
-  {
-    for (j = 0; j < xDim; j++)
-    {
-      std::cout << L[xDim * i + j] << " ";
-    }
-    std::cout << std::endl;
-  }
+  l.setMatrix(L,xDim,yDim);
+  u.setMatrix(U,xDim,yDim);
 }
 
 double* Matrix::getMatrix()

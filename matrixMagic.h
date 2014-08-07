@@ -16,7 +16,7 @@ public:
   void transpose();
   void readMatrix(const char* filename);
   void setMatrix(double* external, int x, int y);
-  void LUDecomp();
+  void LUDecomp(Matrix &l, Matrix &u);
   double* getMatrix();
   void printMatrix();
   int getX();
