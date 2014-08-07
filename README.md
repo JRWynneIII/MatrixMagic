@@ -15,9 +15,10 @@ So far, this provides the user with:
   - `.getY()` will return the size in the Y dimension (i.e. number of rows)
   - `.isVector()` is used to query the object whether the matrix is a vector or not. This will return `true` if it is a vector and `false` if it isn't
   - `.empty()` will delete the internal `double` array
+  - `.LUDecomp()` will factor the matrix inside the object using LU Decomposition
 * Also provided is a simple to use `multiply()` function. This can be used to do Matrix * Vector or Vector * Vector operations. Also supported is multiplication of 2 square matrices
 
-And many more functions/features are in the works, including LU decomposition and Conjugate Gradient routines.
+And many more functions/features are in the works including a Conjugate Gradient routine.
 
 As of now, all functions and objects are defined inside the main header file. This will be changed in the future to be more like a typical C++ library.
 
