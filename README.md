@@ -18,7 +18,7 @@ So far, this provides the user with:
   - `.LUDecomp()` will factor the matrix inside the object using LU Decomposition
 * Also provided is a simple to use `multiply()` function. This can be used to do Matrix * Vector or Vector * Vector operations. Also supported is multiplication of 2 square matrices
 
-And many more functions/features are in the works including a Conjugate Gradient routine.
+And many more functions/features are in the works including a Conjugate Gradient routine to compute Ax = b.
 
 As of now, all functions and objects are defined inside the main header file. This will be changed in the future to be more like a typical C++ library.
 
