@@ -8,6 +8,7 @@ int main(void)
   Matrix A;
   Matrix U;
   Matrix L;
+  Matrix L2, P;
   cout << "LU Decomposition Test\n";
   A.readMatrix("matrix.txt");
   cout << "Matrix A:\n";
@@ -17,5 +18,10 @@ int main(void)
   L.printMatrix();
   cout << "Matrix U:\n";
   U.printMatrix();
+  cout << "Matrix A after decomp: \n";
+  A.printMatrix();
   cout << "\nNOTE: Performing LUDecomp will change values inside of A\n";
+  multiply(L,U);
+  cout << "L*U\n";
+  U.printMatrix();
 }

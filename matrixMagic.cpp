@@ -1,4 +1,5 @@
 #include "matrixMagic.h"
+#define internal_storage(r, c) (internal_storage[(r)*xDim + (c)])
 
 Matrix::Matrix()
 {
@@ -82,7 +83,6 @@ void Matrix::setMatrix(double* external, int x, int y)
 }
 #define L(r, c) (L[(r)*xDim + (c)])
 #define U(r, c) (U[(r)*xDim + (c)])
-#define internal_storage(r, c) (internal_storage[(r)*xDim + (c)])
 void Matrix::LUDecomp(Matrix &l, Matrix &u)
 {
   l.empty();
@@ -100,7 +100,6 @@ void Matrix::LUDecomp(Matrix &l, Matrix &u)
     for (i = k + 1; i < n ; i ++)
     {
       L(i,k) = internal_storage(i,k)/internal_storage(k,k);
-
       for (j = k + 1; j < n ; j ++) 
       {
         internal_storage(i,j) = internal_storage(i,j) - L(i,k)*internal_storage(k,j);
@@ -272,7 +271,35 @@ void multiply(Matrix& A, Matrix& B)
       resultant[j] = res;
       res = 0;
     }
-  
+    B.empty();
     B.setMatrix(resultant,1,n);
   }
+}
+
+//TODO:matrix addition and subtraction routines!!!!!
+
+void solveAxb(Matrix &a, Matrix &B);
+{
+  double* A = a.getMatrix();
+  double* b = B.getMatrix();
+  int n = a.getX();
+  double* x0 = new double[n];
+  double* x1 = new double[n];
+  double* r0 = new double[n];
+  double* r1 = new double[n];
+  double* p0 = new double[n];
+  double* p1 = new double[n];
+  double* alpha = new double[n];
+  double* beta = new double[n];
+  memset(x0,0,n);
+  r0 = subtract(b,multiply(a,x0));
+  p0 = r0;
+  
+
+  for (int k = 0; k < 10^6; k++)
+  {
+    
+  }
+
+  delete[] x0,x1,r0,r1,p0,p1,alpha,beta;
 }
