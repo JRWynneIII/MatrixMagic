@@ -366,11 +366,9 @@ void solveAxb(Matrix &a, Matrix &B)
   double* alpha = new double[n];
   double* beta = new double[n];
   memset(x0,0,n);
-  x_sub.setMatrix(x0,n,1);
+  x_sub.setMatrix(x0,1,n);
   multiplied = mMult(a,x_sub,0);
-  mult.setMatrix(multiplied,n,1);
-  B.printMatrix();
-  mult.printMatrix();
+  mult.setMatrix(multiplied,1,n);
   r0 = mSub(B,mult,0);
   p0 = r0;
  
