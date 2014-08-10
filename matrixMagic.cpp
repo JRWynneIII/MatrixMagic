@@ -151,11 +151,6 @@ void Matrix::empty()
 {
   if (isDeletable)
     delete[] internal_storage;
-  else
-  {
-    std::cerr << "\nMatrixMagic: Error in empty() method!\n\n";
-    exit(EXIT_FAILURE);
-  }
 }
 
 double* squareMatrixMult(Matrix A, Matrix B)
@@ -167,7 +162,6 @@ double* squareMatrixMult(Matrix A, Matrix B)
   double* Bptr = B.getMatrix();
   double* resultant;
 
-  //test to see if they're multiplyable
   if (A.getX() != B.getY())
   {
     std::cerr << "\nMatrixMagic: Error in squareMatrixMult()! Dimensions are not compatable\n\n";
@@ -201,7 +195,7 @@ double* squareMatrixMult(Matrix A, Matrix B)
   return resultant;
 }
 
-void multiply(Matrix& A, Matrix& B)
+double* mMult(Matrix& A, Matrix& B, int overwrite /*= 1*/)
 {
   int n;
   if (A.getX() == B.getY())
@@ -238,27 +232,39 @@ void multiply(Matrix& A, Matrix& B)
              res += a_raw[i] * b_raw[i];
           }
           *resultant = res;
-          B.setMatrix(resultant,1,1);
-          return;
+          if (overwrite == 1)
+          {
+            B.empty();
+            B.setMatrix(resultant,1,1);
+          }
+          else
+            return resultant;
+          return NULL;
         }
       }
     }
     else if (!A.isVector() && !B.isVector())
     {
-      double* resultant = new double;
+      double* resultant;
       resultant = squareMatrixMult(A,B);
-      B.setMatrix(resultant,A.getY(),B.getX());
-      return;
+      if (overwrite == 1)
+      {
+        B.empty();
+        B.setMatrix(resultant,A.getY(),B.getX());
+      }
+      else
+        return resultant;
+      return NULL;
     }
     else
     {
-      std::cerr << "\nMatrixMagic: Error in multiply() routine\n\n";
+      std::cerr << "\nMatrixMagic: Error in mMult() routine\n\n";
       exit(EXIT_FAILURE);
     }
   
     double* a_raw = A.getMatrix();
     double* b_raw = B.getMatrix();
-    double* resultant = (double*)malloc(n*sizeof(double));
+    double* resultant = new double[n];
     double res = 0.0;
     int i = 0;
   
@@ -271,17 +277,85 @@ void multiply(Matrix& A, Matrix& B)
       resultant[j] = res;
       res = 0;
     }
-    B.empty();
-    B.setMatrix(resultant,1,n);
+    if (overwrite == 1)
+    {
+      B.empty();
+      B.setMatrix(resultant,1,n);
+    }
+    else
+      return resultant;
   }
 }
 
-//TODO:matrix addition and subtraction routines!!!!!
-
-void solveAxb(Matrix &a, Matrix &B);
+#define b(r, c) (b[(r)*n + (c)])
+#define a(r, c) (a[(r)*n + (c)])
+#define c(r, d) (c[(r)*n + (d)])
+double* mAdd(Matrix &A, Matrix &B, int overwrite /*=1*/)
 {
+  //Writes answer over B
+  int n = A.getX();
+  int m = A.getY();
+  double* a = A.getMatrix();
+  double* b = B.getMatrix();
+  double* c = new double[n*m];
+  if (n != B.getX() || m != B.getY())
+  {
+    std::cerr << "\nMatrixMagic: Error in matrix mAdd(). Incompatable Matrices\n\n";
+    exit(EXIT_FAILURE);
+  }
+  for (int i = 0; i < m; i++) //y
+  {
+    for(int j = 0; j < n; j++) //x
+    {
+      c(j,i) = a(j,i) + b(j,i);
+    }
+  }
+  if (overwrite == 1)
+  {
+    B.empty();
+    B.setMatrix(c,m,n);
+  }
+  else
+    return c;
+  return NULL;
+}
+
+double* mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
+{
+  //Writes answer over B
+  int n = A.getX();
+  int m = A.getY();
+  double* a = A.getMatrix();
+  double* b = B.getMatrix();
+  double* c = new double[n*m];
+  if (n != B.getX() || m != B.getY())
+  {
+    std::cerr << "\nMatrixMagic: Error in matrix mSub(). Incompatable Matrices\n\n";
+    exit(EXIT_FAILURE);
+  }
+  for (int i = 0; i < m; i++) //y
+  {
+    for(int j = 0; j < n; j++) //x
+    {
+      c(j,i) = a(j,i) - b(j,i);
+    }
+  }
+  if (overwrite == 1)
+  {
+    B.empty();
+    B.setMatrix(c,m,n);
+  }
+  else
+    return c;
+  return NULL;
+}
+
+void solveAxb(Matrix &a, Matrix &B)
+{
+  Matrix x_sub, mult;
   double* A = a.getMatrix();
   double* b = B.getMatrix();
+  double* multiplied;
   int n = a.getX();
   double* x0 = new double[n];
   double* x1 = new double[n];
@@ -292,13 +366,19 @@ void solveAxb(Matrix &a, Matrix &B);
   double* alpha = new double[n];
   double* beta = new double[n];
   memset(x0,0,n);
-  r0 = subtract(b,multiply(a,x0));
+  x_sub.setMatrix(x0,n,1);
+  multiplied = mMult(a,x_sub,0);
+  mult.setMatrix(multiplied,n,1);
+  B.printMatrix();
+  mult.printMatrix();
+  r0 = mSub(B,mult,0);
   p0 = r0;
-  
+ 
 
   for (int k = 0; k < 10^6; k++)
   {
-    
+    std::cout << "Solving...\n";
+    return;    
   }
 
   delete[] x0,x1,r0,r1,p0,p1,alpha,beta;

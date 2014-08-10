@@ -32,6 +32,9 @@ private:
 };
 
 double* squareMatrixMult(Matrix A, Matrix B);
-void multiply(Matrix& A, Matrix& B);
+double* mMult(Matrix& A, Matrix& B, int overwrite = 1);
+double* mAdd(Matrix& A, Matrix& B, int overwrite = 1);
+double* mSub(Matrix& A, Matrix& B, int overwrite = 1);
+void solveAxb(Matrix& A, Matrix& B);
 
 #endif

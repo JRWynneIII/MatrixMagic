@@ -21,7 +21,7 @@ int main(void)
   cout << "Matrix A after decomp: \n";
   A.printMatrix();
   cout << "\nNOTE: Performing LUDecomp will change values inside of A\n";
-  multiply(L,U);
+  mMult(L,U);
   cout << "L*U\n";
   U.printMatrix();
 }

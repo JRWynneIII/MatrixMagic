@@ -10,7 +10,7 @@ int main(void)
   A.setMatrix(vec,3,1);
   B.setMatrix(vec2,1,3);
   std::cout << "1xn Vector multiplied by 1xn Vector\n";
-  multiply(A,B);
+  mMult(A,B);
   B.printMatrix();
   return 0;
 }
