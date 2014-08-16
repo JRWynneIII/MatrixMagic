@@ -7,20 +7,15 @@ int main(void)
 {
   Matrix A;
   Matrix B;
-  double* c;
+  Matrix c;
   A.readMatrix("matrix.txt");
   B.readMatrix("matrix.txt");
   cout << "Subtracting A and B and returning a pointer\n";
-  c = mSub(A,B,0);
-  for (int i = 0; i < 3; i++)
-  {
-    for (int j = 0; j < 3; j++)
-      cout << c(i,j) << " ";
-    cout << endl;
-  }
+  c = mSub(A,B);
+  c.printMatrix();
   cout << "\nB is untouched\n";
   B.printMatrix();
   cout << "Subtracting A and B and overwriting B\n";
-  mSub(A,B);
+  mSub(A,B,1);
   B.printMatrix();
 }

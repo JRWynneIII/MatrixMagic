@@ -14,7 +14,7 @@ int main(void)
   A.setMatrix(aData,2,2);
   B.setMatrix(bData,2,2);
   std::cout << "mxn Matrix multiplied by mxn Matrix\n";
-  mMult(A,B);
+  mMult(A,B,1);
   B.printMatrix();
   return 0;
 }
