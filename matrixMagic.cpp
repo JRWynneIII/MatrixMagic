@@ -1,4 +1,5 @@
 #include "matrixMagic.h"
+#include <cmath>
 #define internal_storage(r, c) (internal_storage[(r)*xDim + (c)])
 
 Matrix::Matrix()
@@ -14,7 +15,7 @@ Matrix::~Matrix()
     delete[] internal_storage;
 }
 
-Matrix& Matrix::transpose()
+Matrix Matrix::transpose()
 {
   if (yDim !=  1 && xDim != 1)
   {
@@ -375,62 +376,65 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
 
 void solveAxb(Matrix &a, Matrix &B)
 {
-//  if (!B.isVector())
-//  {
-//    std::cerr << "\nMatrixMagic: Error in solveAxB(). Second parameter is not a vector!\n\n";
-//    exit(EXIT_FAILURE);
-//  }
-//
-//  Matrix x_0, Ax_0, p_0, r_0, r0t_r0, r0t_r0_new, alpha_0;
-//  double* A = a.getMatrix();
-//  double* b = B.getMatrix();
-//  double* multiplied;
-//  int n = a.getX();
-//  double* x0 = new double[n];
-//  double* r;
-//  double* r0tr0;
-//  double* r0tr0_new;
-//  double* oldPtr;
-//  double* Ax0;
-//  double* p0 = new double[n];
-//  double* alpha, beta;
-//
-//  memset(x0,0,n);
-//  memset(alpha,0,n);
-//  alpha_0.setMatrix(alpha,1,1);
-//  x_0.setMatrix(x0,1,n);
-//  Ax0 = mMult(a, x_0, 0);
-//  Ax_0.setMatrix(Ax0,1,n);
-//  r = mSub(B,Ax_0,0);     //r0 = b-A*x0
-//  memcpy(p0,r,n);         //p0 = r
-//  r_0.setMatrix(r,1,n);
-//  p_0.setMatrix(p0,1,n);
-//  r0tr0 = mMult(r_0.transpose(),r_0.transpose(),0);
-//
-//  for (int k = 0; k < 10^6; k++)
-//  {
-//    std::cout << "Solving...\n";
-//    oldPtr = alpha_0.getMatrix();
-//    alpha = r0tr0[0]/mMult(p_0.transpose(),mMult(a,p_0.transpose(),0),0);
-//    delete[] oldPtr;
-//    oldPtr = x_0.getMatrix();
-//    x_0.setMatrix(mAdd(x_0,mMult(alpha_0,p_0,0),0),1,n);
-//    delete[] oldPtr;
-//    oldPtr = r_0.getMatrix();
-//    r_0.setMatrix(mSub(r_0,mMult(mMult(alpha_0,a,0),p_0,0),0),1,n);
-//    delete[] oldPtr;
-//    oldPtr = r0t_r0_new.getMatrix();
-//    r0t_r0_new.setMatrix(mMult(r_0.transpose(),r_0.transpose(),0),1,1);
-//    delete[] oldPtr;
-//    if (sqrt(r0tr0_new[0]) < 1e-10)
-//      break;
-//    oldPtr = p_0.getMatrix();
-//    p_0.setMatrix(mAdd(r_0,r0_tr0_new,0)/mMult(r0t_r0,p_0,0),1,n);
-//    delete[] oldPtr;
-//    oldPtr = r0t_r0.getMatrix();
-//    r0t_r0.setMatrix(r0tr0_new,1,1);    
-//    delete[] oldPtr;
-//  }
-//  return x0;
-//  delete[] x0,x1,r0,r1,p0,p1,alpha,beta;
+  if (!B.isVector())
+  {
+    std::cerr << "\nMatrixMagic: Error in solveAxB(). Second parameter is not a vector!\n\n";
+    exit(EXIT_FAILURE);
+  }
+
+  Matrix x_0, Ax0, p0, r, r0tr0, r0t_r0_new, alpha_0, temp;
+  double* A = a.getMatrix();
+  double* b = B.getMatrix();
+  double* multiplied;
+  int n = a.getX();
+  double* x0 = new double[n];
+  double* r0tr0_new;
+  double* oldPtr;
+  double temp2;
+  double alpha, beta;
+
+  memset(x0,0,n);
+  alpha_0.setMatrix(&alpha,1,1);
+  x_0.setMatrix(x0,1,n);
+  Ax0 = mMult(a, x_0);
+  r = mSub(B,Ax0);     //r0 = b-A*x0
+  p0.setMatrix(r.getMatrix(),1,n);
+  r.transpose();
+  temp = r.transpose();
+  r0tr0 = mMult(r,temp);
+
+  for (int k = 0; k < 10^6; k++)
+  {
+    std::cout << "Solving...\n";
+    oldPtr = alpha_0.getMatrix();
+    p0.transpose();
+    temp = p0.transpose();
+    temp = mMult(a,temp);
+    alpha = r0tr0.getMatrix()[0]/(mMult(p0,temp)).getMatrix()[0];
+    delete[] oldPtr;
+    oldPtr = x_0.getMatrix();
+    temp = mMult(alpha_0,p0);
+    x_0.setMatrix(mAdd(x_0,temp).getMatrix(),1,n);
+    delete[] oldPtr;
+    oldPtr = r.getMatrix();
+    temp = mMult(alpha_0,a);
+    temp = mMult(temp,p0);
+    r.setMatrix(mSub(r,temp).getMatrix(),1,n);
+    delete[] oldPtr;
+    oldPtr = r0t_r0_new.getMatrix();
+    r.transpose();
+    temp = r.transpose();
+    r0t_r0_new.setMatrix(mMult(r,temp).getMatrix(),1,1);
+    delete[] oldPtr;
+    if (sqrt(r0tr0_new[0]) < 1e-10)
+      break;
+    oldPtr = p0.getMatrix();
+    temp2 = mAdd(r,r0t_r0_new).getMatrix()[0]/mMult(r0tr0,p0).getMatrix()[0];
+    temp.setMatrix(&temp2,1,1);
+    p0.setMatrix(temp.getMatrix(),1,n);
+    delete[] oldPtr;
+    oldPtr = r0tr0.getMatrix();
+    r0tr0.setMatrix(r0tr0_new,1,1);    
+    delete[] oldPtr;
+  }
 }

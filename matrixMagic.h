@@ -13,7 +13,7 @@ public:
   Matrix();
   ~Matrix();
 
-  Matrix& transpose();
+  Matrix transpose();
   void readMatrix(const char* filename);
   void setMatrix(double* external, int x, int y);
   void LUDecomp(Matrix &l, Matrix &u);
