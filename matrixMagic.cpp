@@ -9,6 +9,11 @@ Matrix::Matrix()
   isDeletable = true;
 }
 
+double Matrix::operator()(int x, int y)
+{
+  return internal_storage(x,y);
+}
+
 Matrix::~Matrix()
 {
   if (isDeletable)

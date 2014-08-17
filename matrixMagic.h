@@ -14,6 +14,7 @@ public:
   ~Matrix();
 
   Matrix transpose();
+  double operator()(int x, int y);
   void readMatrix(const char* filename);
   void setMatrix(double* external, int x, int y);
   void LUDecomp(Matrix &l, Matrix &u);
