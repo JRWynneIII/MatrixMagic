@@ -9,9 +9,14 @@ Matrix::Matrix()
   isDeletable = true;
 }
 
-double Matrix::operator()(int x, int y)
+double Matrix::operator()(const int x, const int y)
 {
   return internal_storage(x,y);
+}
+
+Matrix Matrix::operator+(Matrix& B)
+{
+  return mAdd(*this,B);
 }
 
 Matrix::~Matrix()
