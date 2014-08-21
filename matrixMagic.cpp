@@ -19,6 +19,11 @@ Matrix Matrix::operator+(Matrix& B)
   return mAdd(*this,B);
 }
 
+Matrix Matrix::operator*(Matrix& B)
+{
+  return mMult(*this,B);
+}
+
 Matrix::~Matrix()
 {
   if (isDeletable)
@@ -165,8 +170,89 @@ void Matrix::empty()
     delete[] internal_storage;
 }
 
-double* squareMatrixMult(Matrix A, Matrix B)
+#define resultant(r, c) (resultant[(r)*n + (c)])
+#define Aptr(r, c) (Aptr[(r)*n + (c)])
+#define Bptr(r, c) (Bptr[(r)*n + (c)])
+
+void doubleVector(Matrix& A, Matrix& B, double* resultant)
 {
+  int res = 0;
+  int n;
+  if (A.getX() == 1)
+    n = A.getY();
+  else if (A.getY() == 1)
+    n = A.getX();
+  for (int i = 0; i < n; i++)
+    res += A(0,i) * B(0,i);
+  *resultant = res;
+}
+
+void doubleMatrix(Matrix& A, Matrix& B, double* resultant)
+{
+  int k = 0;
+  double res = 0;
+
+  int nA = A.getX();
+  int mA = A.getY();
+  int nB = B.getX();
+  int mB = B.getY();
+  int n = mB;
+  int m = nA;
+
+  if (n != B.getY())
+  {
+    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\n\n";
+    exit(EXIT_FAILURE);
+  }
+
+  
+  for (int i = 0; i < n; i++)
+  {
+    for (int j = 0; j < n; j++)
+    {
+      for (k = 0; k < m; k++) 
+      {
+        res += A(i,k) * B(k,j);
+      }
+      resultant(i,j) = res;
+      res = 0;
+    }
+  }
+}
+
+void matrixVector(Matrix& A, Matrix& B, double* resultant)
+{
+  double res = 0;
+  int i = 0;
+  if (A.isVector())
+  {
+    std::cerr << "\nMatrixMagic: Error in mMult()! A must be a matrix and B must be the vector!\n\n";
+    exit(EXIT_FAILURE);
+  }
+
+  int n = A.getX();
+  int m = A.getY();
+
+  if (n != B.getY())
+  {
+    std::cerr << "\nMatrixMagic: Error in mMult()! Dimensions are not compatable\n\n";
+    exit(EXIT_FAILURE);
+  }
+
+  for (int j = 0; j < n; j++)
+  {
+    for (i = 0; i < n; i++)
+    {
+        res += A(j,i) * B(0,i);
+    }
+    resultant[j] = res;
+    res = 0;
+  }
+}
+
+Matrix mMult(Matrix& A, Matrix& B, int overwrite)
+{
+  Matrix C;
   int n,m;
   int nA, nB, mA, mB;
   double res = 0;
@@ -174,11 +260,6 @@ double* squareMatrixMult(Matrix A, Matrix B)
   double* Bptr = B.getMatrix();
   double* resultant;
 
-  if (A.getX() != B.getY())
-  {
-    std::cerr << "\nMatrixMagic: Error in squareMatrixMult()! Dimensions are not compatable\n\n";
-    exit(EXIT_FAILURE);
-  }
   
   mA = A.getY();
   mB = B.getY();
@@ -186,134 +267,148 @@ double* squareMatrixMult(Matrix A, Matrix B)
   nB = B.getX();
 
   //size of final matrix
-  m = mA;
-  n = nB;
+  m = nA;
+  n = mB;
 
   resultant = new double[m*n];
   //row * column
-  int k = 0;
-  for (int i = 0; i < n; i++)
+  int i = 0;
+  if ((A.isVector() && !B.isVector()) || (!A.isVector() && B.isVector()))
   {
-    for (int j = 0; j < n; j++)
-    {
-      for (k = 0; k < m; k++) 
-      {
-        res += Aptr[i * m + k] * Bptr[k * m + j];
-      }
-      resultant[i * m + j] = res;
-      res = 0;
-    }
+    matrixVector(A,B,resultant);
+    m = 1;
   }
-  return resultant;
+  else if (A.isVector() && B.isVector())
+  {
+    doubleVector(A,B,resultant);
+    m = 1;
+    n = 1;
+  }
+  else
+  {
+    doubleMatrix(A,B,resultant);
+  }
+
+  if (overwrite == 1)
+  {
+    B.setMatrix(resultant,m,n);
+    return B;
+  }
+  else
+  {
+    C.setMatrix(resultant,m,n);
+    return C;
+  }
+
 }
 
-Matrix mMult(Matrix& A, Matrix& B, int overwrite /*= 1*/)
-{
-  int n;
-  Matrix C;
-  if (A.getX() == B.getY())
-  {
-    if (A.isVector() && !B.isVector())
-    {
-      n = B.getX();
-    }
-    else if (!A.isVector() && B.isVector())
-    {
-      n = A.getX();
-    }
-    else if (A.isVector() && B.isVector())
-    {
-      if (A.getX() != B.getX() && A.getY() != B.getY())
-      {
-        if (A.getX() == B.getY() || A.getY() == B.getX())
-        {
-          if (A.getX() != 1)
-          {
-            n = A.getX();
-          }
-          else
-          {
-            n = A.getY();
-          }
-          if (A.getX() != B.getY() || A.getY() != B.getX())
-          {
-            std::cerr << "\nMatrixMagic: Error in mMult() routine\n\n";
-            exit(EXIT_FAILURE);
-          }
-          double* a_raw = A.getMatrix();
-          double* b_raw = B.getMatrix();
-          double* resultant = new double;
-          double res = 0.0;
-          int i = 0;
-          for (i = 0; i < n; i++)
-          {
-             res += a_raw[i] * b_raw[i];
-          }
-          *resultant = res;
-          if (overwrite == 1)
-          {
-            B.empty();
-            B.setMatrix(resultant,1,1);
-            return B;
-          }
-          else
-          {
-            C.setMatrix(resultant,1,n);
-            return C;
-          }
-        }
-      }
-    }
-    else if (!A.isVector() && !B.isVector())
-    {
-      double* resultant;
-      resultant = squareMatrixMult(A,B);
-      if (overwrite == 1)
-      {
-        B.empty();
-        B.setMatrix(resultant,A.getY(),B.getX());
-        return B;
-      }
-      else
-      {
-        C.setMatrix(resultant,1,n);
-        return C;
-      }
-    }
-    else
-    {
-      std::cerr << "\nMatrixMagic: Error in mMult() routine\n\n";
-      exit(EXIT_FAILURE);
-    }
-  
-    double* a_raw = A.getMatrix();
-    double* b_raw = B.getMatrix();
-    double* resultant = new double[n];
-    double res = 0.0;
-    int i = 0;
-  
-    for (int j = 0; j < n; j++)
-    {
-      for (i = 0; i < n; i++)
-      {
-          res += a_raw[j * n + i] * b_raw[i];
-      }
-      resultant[j] = res;
-      res = 0;
-    }
-    if (overwrite == 1)
-    {
-      B.empty();
-      B.setMatrix(resultant,1,n);
-      return B;
-    }
-    else
-    {
-      C.setMatrix(resultant,1,n);
-      return C;
-    }
-  }
-}
+//Matrix mMult(Matrix& A, Matrix& B, int overwrite /*= 1*/)
+//{
+//  int n;
+//  Matrix C;
+//  if (A.getX() == B.getY())
+//  {
+//    if (A.isVector() && !B.isVector())
+//    {
+//      n = B.getX();
+//    }
+//    else if (!A.isVector() && B.isVector())
+//    {
+//      n = A.getX();
+//    }
+//    else if (A.isVector() && B.isVector())
+//    {
+//      if (A.getX() != B.getX() && A.getY() != B.getY())
+//      {
+//        if (A.getX() == B.getY() || A.getY() == B.getX())
+//        {
+//          if (A.getX() != 1)
+//          {
+//            n = A.getX();
+//          }
+//          else
+//          {
+//            n = A.getY();
+//          }
+//          if (A.getX() != B.getY() || A.getY() != B.getX())
+//          {
+//            std::cerr << "\nMatrixMagic: Error in mMult() routine\n\n";
+//            exit(EXIT_FAILURE);
+//          }
+//          double* a_raw = A.getMatrix();
+//          double* b_raw = B.getMatrix();
+//          double* resultant = new double;
+//          double res = 0.0;
+//          int i = 0;
+//          for (i = 0; i < n; i++)
+//          {
+//             res += a_raw[i] * b_raw[i];
+//          }
+//          *resultant = res;
+//          if (overwrite == 1)
+//          {
+//            B.empty();
+//            B.setMatrix(resultant,1,1);
+//            return B;
+//          }
+//          else
+//          {
+//            C.setMatrix(resultant,1,n);
+//            return C;
+//          }
+//        }
+//      }
+//    }
+//    else if (!A.isVector() && !B.isVector())
+//    {
+//      double* resultant;
+//      resultant = squareMatrixMult(A,B);
+//      if (overwrite == 1)
+//      {
+//        B.empty();
+//        B.setMatrix(resultant,A.getY(),B.getX());
+//        return B;
+//      }
+//      else
+//      {
+//        C.setMatrix(resultant,1,n);
+//        return C;
+//      }
+//    }
+//    else
+//    {
+//      std::cerr << "\nMatrixMagic: Error in mMult() routine\n\n";
+//      exit(EXIT_FAILURE);
+//    }
+//  
+//    double* a_raw = A.getMatrix();
+//    double* b_raw = B.getMatrix();
+//    double* resultant = new double[n];
+//    double res = 0.0;
+//    int i = 0;
+//  
+//    for (int j = 0; j < n; j++)
+//    {
+//      for (i = 0; i < n; i++)
+//      {
+//          res += a_raw[j * n + i] * b_raw[i];
+//      }
+//      resultant[j] = res;
+//      res = 0;
+//    }
+//    if (overwrite == 1)
+//    {
+//      B.empty();
+//      B.setMatrix(resultant,1,n);
+//      return B;
+//    }
+//    else
+//    {
+//      C.setMatrix(resultant,1,n);
+//      return C;
+//    }
+//  }
+//}
 
 #define b(r, c) (b[(r)*n + (c)])
 #define a(r, c) (a[(r)*n + (c)])

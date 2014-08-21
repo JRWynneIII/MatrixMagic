@@ -6,7 +6,10 @@ int main(void)
   Matrix A;
   Matrix B;
   Matrix result;
-  double vec[3] = {15,31,661};
+  double* vec = new double[3];
+  vec[0] = 15;
+  vec[1] = 31;
+  vec[2] = 661;
 
   A.readMatrix("matrix.txt");
   B.setMatrix(vec,1,3);
