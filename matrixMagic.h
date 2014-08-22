@@ -11,12 +11,15 @@ class Matrix
 {
 public:
   Matrix();
+  Matrix(const Matrix& rhs);
   ~Matrix();
 
   Matrix transpose();
   double operator()(const int x, const int y);
   Matrix operator+(Matrix& B);
+  Matrix operator-(Matrix& B);
   Matrix operator*(Matrix& B);
+  Matrix& operator=(const Matrix& B);
   void readMatrix(const char* filename);
   void setMatrix(double* external, int x, int y);
   void LUDecomp(Matrix &l, Matrix &u);

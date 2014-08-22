@@ -1,11 +1,11 @@
 CC=g++
 CFLAGS=-L ./lib
-CPPFLAGS= -g -lMatrixMagic
+CPPFLAGS= -std=c++11 -g -lMatrixMagic
 FILENAME:=  $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 
 all : matrixMagic.cpp lib
-	$(CC) -g -fpic -c matrixMagic.cpp -o matrixMagic.o
-	$(CC) -shared -o lib/libMatrixMagic.so matrixMagic.o
+	$(CC) -std=c++11 -g -fpic -c matrixMagic.cpp -o matrixMagic.o
+	$(CC) -std=c++11 -shared -o lib/libMatrixMagic.so matrixMagic.o
 
 tests : $(FILENAME)
 

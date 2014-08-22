@@ -9,11 +9,11 @@ int main(void)
   Matrix C;
   A.readMatrix("matrix.txt");
   B.readMatrix("matrix.txt");
-  cout << "A + B using mAdd():\n";
-  C = mAdd(A,B);
+  cout << "A - B using mSub():\n";
+  C = mSub(A,B);
   C.printMatrix();
   C.empty();
   cout << "A - B using overloaded operator:\n";
-  C = A + B;
+  C = A - B;
   C.printMatrix();
 }
