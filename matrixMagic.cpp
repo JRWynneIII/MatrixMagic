@@ -37,19 +37,22 @@ double Matrix::operator()(const int x, const int y)
   return internal_storage(x,y);
 }
 
-Matrix Matrix::operator+(Matrix& B)
+Matrix Matrix::operator+(const Matrix& B)
 {
-  return mAdd(*this,B);
+  Matrix b = B;
+  return mAdd(*this,b);
 }
 
-Matrix Matrix::operator*(Matrix& B)
+Matrix Matrix::operator*(const Matrix& B)
 {
-  return mMult(*this,B);
+  Matrix b = B;
+  return mMult(*this,b);
 }
 
-Matrix Matrix::operator-(Matrix& B)
+Matrix Matrix::operator-(const Matrix& B)
 {
-  return mSub(*this,B);
+  Matrix b = B;
+  return mSub(*this,b);
 }
 
 Matrix& Matrix::operator=(const Matrix& B)
@@ -66,6 +69,15 @@ Matrix& Matrix::operator=(const Matrix& B)
   return *this;
 }
 
+Matrix& Matrix::operator=(const double& B)
+{
+  this->empty();
+  *internal_storage = B;
+  isDeletable = false;
+  xDim = 1;
+  yDim = 1;
+  return *this;
+}
 Matrix Matrix::transpose()
 {
   if (yDim !=  1 && xDim != 1)
@@ -416,67 +428,36 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
   return EMPTY; //To remove error when compiling with CLANG on Mac
 }
 
-void solveAxb(Matrix &a, Matrix &B)
+Matrix solveAxb(Matrix &A, Matrix &b)
 {
-//  if (!B.isVector())
-//  {
-//    std::cerr << "\nMatrixMagic: Error in solveAxB(). Second parameter is not a vector!\n\n";
-//    exit(EXIT_FAILURE);
-//  }
-//
-//  Matrix x_0, Ax0, p0, r, r0tr0, r0t_r0_new, alpha_0, temp;
-//  double* A = a.getMatrix();
-//  double* b = B.getMatrix();
-//  double* multiplied;
-//  int n = a.getX();
-//  double* x0 = new double[n];
-//  double* r0tr0_new;
-//  double* oldPtr;
-//  double temp2;
-//  double alpha, beta;
-//
-//  memset(x0,0,n);
-//  alpha_0.setMatrix(&alpha,1,1);
-//  x_0.setMatrix(x0,1,n);
-//  Ax0 = mMult(a, x_0);
-//  r = mSub(B,Ax0);     //r0 = b-A*x0
-//  p0.setMatrix(r.getMatrix(),1,n);
-//  r.transpose();
-//  temp = r.transpose();
-//  r0tr0 = mMult(r,temp);
-//
-//  for (int k = 0; k < 10^6; k++)
-//  {
-//    std::cout << "Solving...\n";
-//    oldPtr = alpha_0.getMatrix();
-//    p0.transpose();
-//    temp = p0.transpose();
-//    temp = mMult(a,temp);
-//    alpha = r0tr0.getMatrix()[0]/(mMult(p0,temp)).getMatrix()[0];
-//    delete[] oldPtr;
-//    oldPtr = x_0.getMatrix();
-//    temp = mMult(alpha_0,p0);
-//    x_0.setMatrix(mAdd(x_0,temp).getMatrix(),1,n);
-//    delete[] oldPtr;
-//    oldPtr = r.getMatrix();
-//    temp = mMult(alpha_0,a);
-//    temp = mMult(temp,p0);
-//    r.setMatrix(mSub(r,temp).getMatrix(),1,n);
-//    delete[] oldPtr;
-//    oldPtr = r0t_r0_new.getMatrix();
-//    r.transpose();
-//    temp = r.transpose();
-//    r0t_r0_new.setMatrix(mMult(r,temp).getMatrix(),1,1);
-//    delete[] oldPtr;
-//    if (sqrt(r0tr0_new[0]) < 1e-10)
-//      break;
-//    oldPtr = p0.getMatrix();
-//    temp2 = mAdd(r,r0t_r0_new).getMatrix()[0]/mMult(r0tr0,p0).getMatrix()[0];
-//    temp.setMatrix(&temp2,1,1);
-//    p0.setMatrix(temp.getMatrix(),1,n);
-//    delete[] oldPtr;
-//    oldPtr = r0tr0.getMatrix();
-//    r0tr0.setMatrix(r0tr0_new,1,1);    
-//    delete[] oldPtr;
-//  }
+  Matrix r0, p0, x0, r1, alpha, rsold, rsnew;
+  int k = 0;
+  double* initialGuess = new double[A.getX()];
+  for (int i = 0; i < A.getX(); i++)
+  {
+    initialGuess[i] = i+1;
+  }
+  x0.setMatrix(initialGuess,1,A.getX());
+  
+  r0 = b - (A*x0);
+  p0 = r0;
+
+  rsold = r0.transpose() * r0.transpose();
+
+  for (k = 0; k < 1e6; k++)
+  {
+    alpha = (rsold.getMatrix()[0])/(p0.transpose()*(A*p0.transpose())).getMatrix()[0];
+    x0 = x0 + (alpha * p0);
+    r1 = r0 - (alpha*(A*p0));
+    rsnew = (r1.transpose() * r1.transpose());
+
+    if (rsnew.getMatrix()[0] < 1e-10)
+      return x0;
+
+    p0 = (r1 + rsnew).getMatrix()[0] / (rsold*p0).getMatrix()[0];
+    rsold = rsnew;
+  }
+  
+  delete[] initialGuess;
+  return x0; //Just in case it takes all 1e6 iterations to get to the end. And to make Clang shut up with warnings
 }

@@ -16,10 +16,11 @@ public:
 
   Matrix transpose();
   double operator()(const int x, const int y);
-  Matrix operator+(Matrix& B);
-  Matrix operator-(Matrix& B);
-  Matrix operator*(Matrix& B);
+  Matrix operator+(const Matrix& B);
+  Matrix operator-(const Matrix& B);
+  Matrix operator*(const Matrix& B);
   Matrix& operator=(const Matrix& B);
+  Matrix& operator=(const double& B);
   void readMatrix(const char* filename);
   void setMatrix(double* external, int x, int y);
   void LUDecomp(Matrix &l, Matrix &u);
@@ -41,6 +42,6 @@ double* squareMatrixMult(Matrix A, Matrix B);
 Matrix mMult(Matrix& A, Matrix& B, int overwrite = 0);
 Matrix mAdd(Matrix& A, Matrix& B, int overwrite = 0);
 Matrix mSub(Matrix& A, Matrix& B, int overwrite = 0);
-void solveAxb(Matrix& A, Matrix& B);
+Matrix solveAxb(Matrix& A, Matrix& B);
 
 #endif
