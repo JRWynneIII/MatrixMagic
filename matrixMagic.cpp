@@ -12,8 +12,7 @@ Matrix::Matrix()
 
 Matrix::Matrix(const Matrix& rhs)
 {
-  this->empty();
-  internal_storage = new double[rhs.xDim*rhs.yDim];
+  internal_storage = new double[(rhs.xDim) * (rhs.yDim)];
   memcpy(internal_storage, rhs.internal_storage,(rhs.xDim)*(rhs.yDim)*sizeof(double));
   isDeletable = true;
   xDim = rhs.xDim;
@@ -53,12 +52,15 @@ Matrix Matrix::operator-(Matrix& B)
 
 Matrix& Matrix::operator=(const Matrix& B)
 {
-  this->empty();
-  internal_storage = new double[B.xDim*B.yDim];
-  memcpy(internal_storage,B.internal_storage,(B.xDim)*(B.yDim)*sizeof(double));
-  isDeletable = true;
-  xDim = B.xDim;
-  yDim = B.yDim;
+  if (this != &B)
+  {
+    this->empty();
+    internal_storage = new double[(B.xDim)*(B.yDim)];
+    memcpy(internal_storage,B.internal_storage,(B.xDim)*(B.yDim)*sizeof(double));
+    isDeletable = true;
+    xDim = B.xDim;
+    yDim = B.yDim;
+  }
   return *this;
 }
 
