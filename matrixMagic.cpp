@@ -96,10 +96,20 @@ Matrix Matrix::transpose()
   return *this;
 }
 
+void Matrix::read(const char* filename)
+{
+  this->readMatrix(filename);
+}
+
+void Matrix::print()
+{
+  this->printMatrix();
+}
 void Matrix::readMatrix(const char* filename)
 {
   int x = 0;
   int y = 0;
+  //measure matrix size
   ifstream matrixFile;
   matrixFile.open(filename);
   string c;
@@ -113,8 +123,8 @@ void Matrix::readMatrix(const char* filename)
     word = strtok(NULL, " ");
     xSize++;
   }
-  matrixFile.close();
-  matrixFile.open(filename);
+  matrixFile.clear();
+  matrixFile.seekg(0);
 
   while(!matrixFile.eof())
   {
@@ -123,8 +133,8 @@ void Matrix::readMatrix(const char* filename)
   }
   ySize--;
   internal_storage = new double[xSize*ySize];
-  matrixFile.close();
-  matrixFile.open(filename);
+  matrixFile.clear();
+  matrixFile.seekg(0);
   int temp;
   for(y = 0; y < ySize; y++)
   {
@@ -254,7 +264,8 @@ void doubleMatrix(Matrix& A, Matrix& B, double* resultant)
 
   if (n != B.getY())
   {
-    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\n\n";
+    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "B: Matrix: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
 
@@ -279,16 +290,18 @@ void matrixVector(Matrix& A, Matrix& B, double* resultant)
   int i = 0;
   if (A.isVector())
   {
-    std::cerr << "\nMatrixMagic: Error in mMult()! A must be a matrix and B must be the vector!\n\n";
+    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "B: Vector: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
 
-  int n = A.getX();
-  int m = A.getY();
+  int n = A.getX(); //Columns
+  int m = A.getY(); //Rows
 
-  if (n != B.getY())
+  if (n != B.getY()) //If A's columns are not equal to B's rows
   {
-    std::cerr << "\nMatrixMagic: Error in mMult()! Dimensions are not compatable\n\n";
+    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "B: Vector: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
 

@@ -22,10 +22,12 @@ public:
   Matrix& operator=(const Matrix& B);
   Matrix& operator=(const double& B);
   void readMatrix(const char* filename);
+  void read(const char* filename);
   void setMatrix(double* external, int x, int y);
   void LUDecomp(Matrix &l, Matrix &u);
   double* getMatrix();
   void printMatrix();
+  void print();
   int getX();
   int getY();
   bool isVector();
