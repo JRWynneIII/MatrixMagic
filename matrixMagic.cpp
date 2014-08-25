@@ -23,11 +23,8 @@ Matrix::Matrix(const Matrix& rhs)
 
 Matrix::~Matrix()
 {
-  try {
+  if (isDeletable)
     delete[] internal_storage;
-  } catch (...) {
-    free(internal_storage);
-  }
 }
 
 double Matrix::operator()(const int x, const int y)
@@ -200,11 +197,8 @@ bool Matrix::isVector()
 
 void Matrix::empty()
 {
-  try {
+  if (isDeletable)
     delete[] internal_storage;
-  } catch (...) {
-    free(internal_storage);
-  }
 }
 
 #define resultant(r, c) (resultant[(r)*n + (c)])
@@ -373,6 +367,8 @@ Matrix mAdd(Matrix &A, Matrix &B, int overwrite /*=1*/)
     C.setMatrix(c,m,n);
     return C;
   }
+  Matrix EMPTY;
+  return EMPTY; //To remove error when compiling with CLANG on Mac
 }
 
 Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
@@ -406,6 +402,8 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
     C.setMatrix(c,m,n);
     return C;
   }
+  Matrix EMPTY;
+  return EMPTY; //To remove error when compiling with CLANG on Mac
 }
 
 void solveAxb(Matrix &a, Matrix &B)
