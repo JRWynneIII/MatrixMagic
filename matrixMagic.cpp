@@ -23,8 +23,13 @@ Matrix::Matrix(const Matrix& rhs)
 
 Matrix::~Matrix()
 {
+  if (internal_storage == NULL)
+    return;
   if (isDeletable)
+  {
     delete[] internal_storage;
+    internal_storage = NULL;
+  }
 }
 
 double Matrix::operator()(const int x, const int y)
@@ -197,8 +202,13 @@ bool Matrix::isVector()
 
 void Matrix::empty()
 {
+  if (internal_storage == NULL)
+    return;
   if (isDeletable)
+  {
     delete[] internal_storage;
+    internal_storage = NULL;
+  }
 }
 
 #define resultant(r, c) (resultant[(r)*n + (c)])
