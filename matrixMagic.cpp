@@ -19,6 +19,15 @@ Matrix::Matrix(const Matrix& rhs)
   yDim = rhs.yDim;
 }
 
+Matrix::Matrix(const double& rhs)
+{
+  internal_storage = new double;
+  *internal_storage = rhs;
+  isDeletable = false;
+  xDim = 1;
+  yDim = 1;
+}
+
 #define internal_storage(r, c) (internal_storage[(r)*xDim + (c)])
 
 Matrix::~Matrix()
@@ -72,6 +81,7 @@ Matrix& Matrix::operator=(const Matrix& B)
 Matrix& Matrix::operator=(const double& B)
 {
   this->empty();
+  internal_storage = new double;
   *internal_storage = B;
   isDeletable = false;
   xDim = 1;
@@ -216,7 +226,17 @@ int Matrix::getY()
 
 bool Matrix::isVector()
 {
-  if (this->getX() == 1 || this->getY() == 1)
+  if (this->isScalar())
+    return false;
+  else if (this->getX() != 1 && this->getY() != 1)
+    return false;
+  else
+    return true;
+}
+
+bool Matrix::isScalar()
+{
+  if (this->getX() == 1 && this->getY() == 1)
     return true;
   else
     return false;
@@ -264,7 +284,7 @@ void doubleMatrix(Matrix& A, Matrix& B, double* resultant)
 
   if (n != B.getY())
   {
-    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "\n" << __FILE__ << ":" << __LINE__ << " MatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
     std::cerr << "B: Matrix: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
@@ -290,7 +310,7 @@ void matrixVector(Matrix& A, Matrix& B, double* resultant)
   int i = 0;
   if (A.isVector())
   {
-    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "\n" << __FILE__ << ":" << __LINE__ << " MatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
     std::cerr << "B: Vector: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
@@ -300,7 +320,7 @@ void matrixVector(Matrix& A, Matrix& B, double* resultant)
 
   if (n != B.getY()) //If A's columns are not equal to B's rows
   {
-    std::cerr << "\nMatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "\n" << __FILE__ << ":" << __LINE__ << " MatrixMagic: Error in mMult()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
     std::cerr << "B: Vector: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
@@ -315,6 +335,33 @@ void matrixVector(Matrix& A, Matrix& B, double* resultant)
     res = 0;
   }
 }
+
+void scalarMatrix(Matrix& A, Matrix& B, double* resultant)
+{
+  //B is the vector, A is the scalar
+  int n = B.getX();
+  int m = B.getY();
+  for (int j = 0; j < m; j++)
+    for (int i = 0; i < n; i++)
+    {
+      resultant(j,i) = A(0) * B(j,i);
+    }  
+}
+
+void scalarVector(Matrix& A, Matrix& B, double* resultant)
+{
+  scalarMatrix(A,B,resultant);
+//  int size = 0;
+//  if (B.getY() > B.getX())
+//    size = B.getY();
+//  else
+//    size = B.getX();
+//  for (int i = 0; i < size; i++)
+//  {
+//    resultant[i] = A(0) * B(i);
+//  }  
+}
+
 
 Matrix mMult(Matrix& A, Matrix& B, int overwrite)
 {
@@ -341,14 +388,57 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite)
   int i = 0;
   if ((A.isVector() && !B.isVector()) || (!A.isVector() && B.isVector()))
   {
-    matrixVector(A,B,resultant);
-    m = 1;
+    if (A.isScalar() || B.isScalar()){}
+    else
+    {
+      matrixVector(A,B,resultant);
+      m = 1;
+    }
   }
   else if (A.isVector() && B.isVector())
   {
-    doubleVector(A,B,resultant);
-    m = 1;
-    n = 1;
+    if (A.isScalar() || B.isScalar()){}
+    else
+    {
+      doubleVector(A,B,resultant);
+      m = 1;
+      n = 1;
+    }
+  }
+  if (A.isScalar() || B.isScalar())
+  {
+    if (A.isScalar())
+    {
+      //A is the scalar
+      if (B.isVector())
+      {
+        //B is a vector and A is a scalar
+	scalarVector(A,B,resultant);
+	m = mB;
+	n = nB;
+      }
+      else
+      {
+        scalarMatrix(A,B,resultant);
+	m = mB;
+	n = nB;
+      }
+    }
+    else
+    {
+      if (A.isVector())
+      {
+        scalarVector(B,A,resultant);
+	m = mA;
+	n = nA;
+      }
+      else
+      {
+	scalarMatrix(B,A,resultant);
+	m = mA;
+	n = nA;
+      }
+    }
   }
   else
   {
@@ -357,12 +447,12 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite)
 
   if (overwrite == 1)
   {
-    B.setMatrix(resultant,m,n);
+    B.setMatrix(resultant,n,m);
     return B;
   }
   else
   {
-    C.setMatrix(resultant,m,n);
+    C.setMatrix(resultant,n,m);
     return C;
   }
 
@@ -382,7 +472,8 @@ Matrix mAdd(Matrix &A, Matrix &B, int overwrite /*=1*/)
   double* c = new double[n*m];
   if (n != B.getX() || m != B.getY())
   {
-    std::cerr << "\nMatrixMagic: Error in matrix mAdd(). Incompatable Matrices\n\n";
+    std::cerr << "\n" << __FILE__ << ":" << __LINE__ << " MatrixMagic: Error in mAdd()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "B: Matrix: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
   for (int i = 0; i < m; i++) //y
@@ -417,7 +508,8 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
   double* c = new double[n*m];
   if (n != B.getX() || m != B.getY())
   {
-    std::cerr << "\nMatrixMagic: Error in matrix mSub(). Incompatable Matrices\n\n";
+    std::cerr << "\n" << __FILE__ << ":" << __LINE__ << " MatrixMagic: Error in mSub()!! Dimensions are not compatable\nA: Matrix: X: " << A.getX() << " Y: " << A.getY() << "\n";
+    std::cerr << "B: Matrix: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
   for (int i = 0; i < m; i++) //y
@@ -452,22 +544,22 @@ Matrix solveAxb(Matrix &A, Matrix &b)
   }
   x0.setMatrix(initialGuess,1,A.getX());
   
-  r0 = b - (A*x0);
+  r0 = b - (A*x0).transpose();
   p0 = r0;
 
   rsold = r0.transpose() * r0.transpose();
 
   for (k = 0; k < 1e6; k++)
   {
-    alpha = (rsold.getMatrix()[0])/(p0.transpose()*(A*p0.transpose())).getMatrix()[0];
+    alpha = (rsold(0))/(p0.transpose()*(A*p0))(0);
     x0 = x0 + (alpha * p0);
     r1 = r0 - (alpha*(A*p0));
-    rsnew = (r1.transpose() * r1.transpose());
+    rsnew = (r1.transpose() * r1);
 
-    if (rsnew.getMatrix()[0] < 1e-10)
+    if (rsnew(0) < 1e-10)
       return x0;
 
-    p0 = (r1 + rsnew).getMatrix()[0] / (rsold*p0).getMatrix()[0];
+    p0 = (r1 + rsnew)(0) / (rsold*p0)(0);
     rsold = rsnew;
   }
   

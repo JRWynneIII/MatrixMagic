@@ -12,10 +12,11 @@ class Matrix
 public:
   Matrix();
   Matrix(const Matrix& rhs);
+  Matrix(const double& rhs);
   ~Matrix();
 
   Matrix transpose();
-  double operator()(const int x, const int y);
+  double operator()(const int x, const int y = 0);
   Matrix operator+(const Matrix& B);
   Matrix operator-(const Matrix& B);
   Matrix operator*(const Matrix& B);
@@ -31,6 +32,7 @@ public:
   int getX();
   int getY();
   bool isVector();
+  bool isScalar();
   void empty();
 
 private:
