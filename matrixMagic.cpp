@@ -535,7 +535,7 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
 
 Matrix solveAxb(Matrix &A, Matrix &b)
 {
-  Matrix r0, p0, x0, r1, alpha, rsold, rsnew;
+  Matrix r0, p0, x0, r1, alpha, rsold, rsnew, Ap, beta;
   int k = 0;
   double* initialGuess = new double[A.getX()];
   for (int i = 0; i < A.getX(); i++)
@@ -544,21 +544,25 @@ Matrix solveAxb(Matrix &A, Matrix &b)
   }
   x0.setMatrix(initialGuess,1,A.getX());
   
-  r0 = b - (A*x0).transpose();
-  p0 = r0;
+  r1 = b - (A*x0).transpose();
+  p0 = r1;
 
-  rsold = r0.transpose() * r0.transpose();
+  rsold = r1.transpose() * r1.transpose();
 
   for (k = 0; k < 1e6; k++)
   {
-    alpha = (rsold(0))/(p0.transpose()*(A*p0))(0);
-    x0 = x0 + (alpha * p0);
-    r1 = r0 - (alpha*(A*p0));
-    rsnew = (r1.transpose() * r1);
+    Ap = A * p0.transpose();
+    p0.transpose();
+    alpha = (rsold(0))/(p0.transpose()*Ap)(0);
+    //p0.transpose();
+    x0 = x0 + (p0*alpha(0));
+    r1 = r1 - (Ap*alpha(0));
+    rsnew = (r1.transpose() * r1.transpose());
 
     if (rsnew(0) < 1e-10)
       return x0;
-
+    //beta = rsnew(0) / rsold(0);
+    //p0 = r1 + (p0*beta(0));
     p0 = (r1 + rsnew)(0) / (rsold*p0)(0);
     rsold = rsnew;
   }
