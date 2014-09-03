@@ -1,11 +1,12 @@
-CC=g++
+CC=nvcc
 CFLAGS=-L ./lib
-CPPFLAGS= -std=c++11 -g -lMatrixMagic
+CPPFLAGS= -arch=sm_35 -g -lMatrixMagic
 FILENAME:=  $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 
 all : matrixMagic.cpp lib
-	$(CC) -std=c++11 -g -fpic -c matrixMagic.cpp -o matrixMagic.o
-	$(CC) -std=c++11 -shared -o lib/libMatrixMagic.so matrixMagic.o
+	$(CC) -arch=sm_35 --shared -g --compiler-options '-fPIC' -c matrixMagic.cpp -o matrixMagic.o
+	$(CC) -arch=sm_35 --shared -g --compiler-options '-fPIC' -c matrixMagic.cu -o cudaMatrixMagic.o
+	$(CC) -arch=sm_35 --shared -o lib/libMatrixMagic.so matrixMagic.o cudaMatrixMagic.o
 
 tests : $(FILENAME)
 

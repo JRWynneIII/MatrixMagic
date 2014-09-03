@@ -47,5 +47,6 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite = 0);
 Matrix mAdd(Matrix& A, Matrix& B, int overwrite = 0);
 Matrix mSub(Matrix& A, Matrix& B, int overwrite = 0);
 Matrix solveAxb(Matrix& A, Matrix& B);
+void transposeWrapper(double* internal_storage, int m, int n);
 
 #endif

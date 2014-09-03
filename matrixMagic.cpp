@@ -92,13 +92,15 @@ Matrix Matrix::transpose()
 {
   if (yDim !=  1 && xDim != 1)
   {
-    for (int i=0; i < yDim; i++) //y
-      for (int j=i+1; j < xDim; j++) //x
-      {
-        int temp = internal_storage[i * xDim + j];
-        internal_storage[i * xDim + j] = internal_storage[j * xDim + i];
-        internal_storage[j * xDim + i] = temp;
-      }
+    //ACCELERATE
+   // for (int i=0; i < yDim; i++) //y
+   //   for (int j=i+1; j < xDim; j++) //x
+   //   {
+   //     double temp = internal_storage[i * xDim + j];
+   //     internal_storage[i * xDim + j] = internal_storage[j * xDim + i];
+   //     internal_storage[j * xDim + i] = temp;
+   //   }
+    transposeWrapper(internal_storage, yDim, xDim);
   }
   int tmp = xDim;
   xDim = yDim;
@@ -178,7 +180,8 @@ void Matrix::LUDecomp(Matrix &l, Matrix &u)
 
   int i, j, k;
   int n = xDim;
-
+  
+  //ACCELERATE
   for (k = 0; k < n ; k++) 
   {
     L(k,k) = 1;
@@ -289,7 +292,7 @@ void doubleMatrix(Matrix& A, Matrix& B, double* resultant)
     exit(EXIT_FAILURE);
   }
 
-  
+  //ACCELERATE 
   for (int i = 0; i < n; i++)
   {
     for (int j = 0; j < n; j++)
@@ -325,6 +328,7 @@ void matrixVector(Matrix& A, Matrix& B, double* resultant)
     exit(EXIT_FAILURE);
   }
 
+  //ACCELERATE
   for (int j = 0; j < n; j++)
   {
     for (i = 0; i < n; i++)
@@ -341,6 +345,7 @@ void scalarMatrix(Matrix& A, Matrix& B, double* resultant)
   //B is the vector, A is the scalar
   int n = B.getX();
   int m = B.getY();
+  //ACCELERATE
   for (int j = 0; j < m; j++)
     for (int i = 0; i < n; i++)
     {
@@ -424,15 +429,15 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite)
       if (B.isVector())
       {
         //B is a vector and A is a scalar
-	scalarVector(A,B,resultant);
-	m = mB;
-	n = nB;
+      	scalarVector(A,B,resultant);
+      	m = mB;
+      	n = nB;
       }
       else
       {
         scalarMatrix(A,B,resultant);
-	m = mB;
-	n = nB;
+      	m = mB;
+      	n = nB;
       }
     }
     else
@@ -440,14 +445,14 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite)
       if (A.isVector())
       {
         scalarVector(B,A,resultant);
-	m = mA;
-	n = nA;
+      	m = mA;
+      	n = nA;
       }
       else
       {
-	scalarMatrix(B,A,resultant);
-	m = mA;
-	n = nA;
+      	scalarMatrix(B,A,resultant);
+      	m = mA;
+      	n = nA;
       }
     }
   }
@@ -487,6 +492,7 @@ Matrix mAdd(Matrix &A, Matrix &B, int overwrite /*=1*/)
     std::cerr << "B: Matrix: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
+  //ACCELERATE
   for (int i = 0; i < m; i++) //y
   {
     for(int j = 0; j < n; j++) //x
@@ -523,6 +529,7 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
     std::cerr << "B: Matrix: X: " << B.getX() << " Y: " << B.getY() << "\n\n"; 
     exit(EXIT_FAILURE);
   }
+  //ACCELERATE
   for (int i = 0; i < m; i++) //y
   {
     for(int j = 0; j < n; j++) //x
@@ -560,6 +567,7 @@ Matrix solveAxb(Matrix &A, Matrix &b)
 
   rsold = r1.transpose() * r1.transpose();
 
+  //ACCELERATE
   for (k = 0; k < 1e6; k++)
   {
     Ap = A * p0;
