@@ -497,11 +497,11 @@ Matrix mAdd(Matrix &A, Matrix &B, int overwrite /*=1*/)
   if (overwrite == 1)
   {
     B.empty();
-    B.setMatrix(c,m,n);
+    B.setMatrix(c,n,m);
   }
   else
   {
-    C.setMatrix(c,m,n);
+    C.setMatrix(c,n,m);
     return C;
   }
   Matrix EMPTY;
@@ -575,7 +575,7 @@ Matrix solveAxb(Matrix &A, Matrix &b)
       return x0;
     //beta = rsnew(0) / rsold(0);
     //p0 = r1 + (p0*beta(0));
-    p0 = (r1 + rsnew)(0) / (rsold*p0)(0);
+    p0 = r1 + p0 * (rsnew(0)/rsold(0));
     rsold = rsnew;
   }
   
