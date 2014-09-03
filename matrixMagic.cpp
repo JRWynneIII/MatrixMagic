@@ -392,9 +392,8 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite)
     else
     {
       matrixVector(A,B,resultant);
-      n = A.getY();
-      m = B.getX();
-      std::cout << m << " " << n << std::endl;
+      m = A.getY();
+      n = B.getX();
       if (overwrite == 1)
       {
         B.setMatrix(resultant,n,m);
@@ -534,11 +533,11 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
   if (overwrite == 1)
   {
     B.empty();
-    B.setMatrix(c,m,n);
+    B.setMatrix(c,n,m);
   }
   else
   {
-    C.setMatrix(c,m,n);
+    C.setMatrix(c,n,m);
     return C;
   }
   Matrix EMPTY;
