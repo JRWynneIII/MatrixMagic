@@ -392,7 +392,19 @@ Matrix mMult(Matrix& A, Matrix& B, int overwrite)
     else
     {
       matrixVector(A,B,resultant);
-      m = 1;
+      n = A.getY();
+      m = B.getX();
+      std::cout << m << " " << n << std::endl;
+      if (overwrite == 1)
+      {
+        B.setMatrix(resultant,n,m);
+        return B;
+      }
+      else
+      {
+        C.setMatrix(resultant,n,m);
+        return C;
+      }
     }
   }
   else if (A.isVector() && B.isVector())
@@ -535,26 +547,27 @@ Matrix mSub(Matrix &A, Matrix &B, int overwrite /*=1*/)
 
 Matrix solveAxb(Matrix &A, Matrix &b)
 {
-  Matrix r0, p0, x0, r1, alpha, rsold, rsnew, Ap, beta;
+  Matrix r0, p0, x0, r1, alpha, rsold, rsnew, Ap, beta, Ax;
   int k = 0;
   double* initialGuess = new double[A.getX()];
-  for (int i = 0; i < A.getX(); i++)
-  {
-    initialGuess[i] = i+1;
-  }
+  initialGuess[0] = 2;
+  initialGuess[1] = 1;
+//  for (int i = 0; i < A.getX(); i++)
+//  {
+//    initialGuess[i] = 0;
+//  }
   x0.setMatrix(initialGuess,1,A.getX());
-  
-  r1 = b - (A*x0).transpose();
+  Ax = A*x0;
+  r1 = b - Ax;
   p0 = r1;
 
   rsold = r1.transpose() * r1.transpose();
 
   for (k = 0; k < 1e6; k++)
   {
-    Ap = A * p0.transpose();
-    p0.transpose();
+    Ap = A * p0;
     alpha = (rsold(0))/(p0.transpose()*Ap)(0);
-    //p0.transpose();
+    p0.transpose();
     x0 = x0 + (p0*alpha(0));
     r1 = r1 - (Ap*alpha(0));
     rsnew = (r1.transpose() * r1.transpose());
