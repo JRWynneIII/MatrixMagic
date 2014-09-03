@@ -549,12 +549,10 @@ Matrix solveAxb(Matrix &A, Matrix &b)
   Matrix r0, p0, x0, r1, alpha, rsold, rsnew, Ap, beta, Ax;
   int k = 0;
   double* initialGuess = new double[A.getX()];
-  initialGuess[0] = 2;
-  initialGuess[1] = 1;
-//  for (int i = 0; i < A.getX(); i++)
-//  {
-//    initialGuess[i] = 0;
-//  }
+  for (int i = 0; i < A.getX(); i++)
+  {
+    initialGuess[i] = 0;
+  }
   x0.setMatrix(initialGuess,1,A.getX());
   Ax = A*x0;
   r1 = b - Ax;
@@ -578,7 +576,5 @@ Matrix solveAxb(Matrix &A, Matrix &b)
     p0 = r1 + p0 * (rsnew(0)/rsold(0));
     rsold = rsnew;
   }
-  
-  delete[] initialGuess;
   return x0; //Just in case it takes all 1e6 iterations to get to the end. And to make Clang shut up with warnings
 }

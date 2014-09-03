@@ -5,7 +5,7 @@ using namespace std;
 int main(void)
 {
   Matrix A,b;
-  A.readMatrix("A.txt");
-  b.readMatrix("b.txt");
+  A.readMatrix("matrix2.txt");
+  b.readMatrix("vector.txt");
   solveAxb(A,b).print();
 }
